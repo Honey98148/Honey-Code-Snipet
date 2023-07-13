@@ -1,0 +1,243 @@
+Print Formats:
+HTML Section
+ {% set delivery_note = frappe.get_doc('Delivery Note', doc.delivery_note) %}
+     {% set company = frappe.get_doc('Company', delivery_note.company) %}
+     {% set sales_order = frappe.get_doc('Sales Order' , delivery_note.items[0]["against_sales_order"]) %}
+     {% set customer = frappe.get_doc('Customer', sales_order.customer) %}
+{% macro header() %}
+ 
+<div class="flex bd-solid">
+    <div class= "left">
+        {% set letterhead = frappe.get_all('Letter Head',filters={'is_default':1},fields=['content']) %}
+            {{ letterhead[0].content }}
+    </div>
+    <div class="right" style = 'padding-top:50px;'>
+        <p class="heading-right"><b>PACKING LIST</b></p>
+</div>
+</div>
+ {% endmacro %}
+ 
+ 
+{% macro footer() %}
+<div class = "page-break"></div>
+{% endmacro %}
+
+
+{% macro tablehead() %}
+     <div class = "col-xs-12" style = "Display:flex; padding:0;border:1px solid #000">
+       
+        <div style = 'width:5% ; border:1px solid #000'>
+            S.No
+        </div>
+        <div style = 'width:10% ;border:1px solid #000'>Crate/Box/Container</div>
+        <div style = 'width:10%;border:1px solid #000'>Crate Dimension (mm)</div>
+        <div style = 'width:10%;border:1px solid #000'>Color code</div>
+        <div style = 'width:10%;border:1px solid #000'>Description</div>
+        <div style = 'width:10%;border:1px solid #000'>Type</div>
+        <div style = 'width:10%; border:1px solid #000'>Finish</div>
+        <div style = 'width:5%;border:1px solid #000'>Thk Qty (mm)</div>
+        <div style = 'width:10%;border:1px solid #000'>Area Sft</div>
+        <div style = 'width:10%;border:1px solid #000'>Net Weight (kgs)</div>
+        <div style = 'width:10%;border:1px solid #000'>Gross Weight (kgs)</div>
+        
+    </div>
+    
+       
+{% endmacro %}
+
+{{header ()}}
+<section class="head flex">
+
+    </section>
+    <section class="exporter flex">
+        <div class="first-left-div">
+            <p><b>{{company.name}}</b></p>
+            <p>SY.NO.73/2B, NALLAGANAKOTAPALLI VILLAGE, N.H.7,
+                HOSUR, Krishnagiri, Tamil Nadu, 635109,INDIA.</p>
+        </div>
+        <div>
+            <div class="border-btm-black">
+            <p>Date : {{sales_order.transaction_date}}</p>
+            <p>Buyer's Order No. : {{sales_order.po_no}} / {{sales_order.po_date}}</p>
+            <p>Date: {{sales_order.delivery_date}}</p>
+            </div>
+            <div class = "references">
+                <p>Other Reference(s) : IEC No. 00000000XX Dated - 01.01.2023</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="consignee flex">
+        <div class="first-left-div">
+            <p><b>Consignee :</b></p>
+            <p><b> {{sales_order.customer}},</b></p>
+            <p>{{customer.customer_details}}</p>
+        </div>
+        <div>
+            <div class = "buyer">
+                <p>Buyer (if other than consignee) :</p>
+            </div>
+        </div>
+    </section>
+    
+    <section>
+        <div class = "effective-dimension">
+        <p>EFFECTIVE DIMENSIONS OF THE QUARTZ SURFACE SLAB REGULAR - 4.27 SQM OR 45.962 SFT, JUMBO - 5.45 SQM OR 58.61 SFT, SUPER JUMBO -
+6.974 SQM OR 75.075 SFT</p>
+        </div>
+    </section>
+    
+    {{ tablehead() }}
+
+        {% set counter = 0 %}
+        {% set length = doc.items|length %}
+    	{%- for item in doc.items -%}
+    	  <div class = "col-xs-12" style = "Display:flex; padding:0;border:1px solid #000">
+       
+        <div style = 'width:5% ; border:1px solid #000'>
+            {{item.idx}}
+        </div>
+        <div style = 'width:10% ;border:1px solid #000'>CRATE-M02253</div>
+        <div style = 'width:10%;border:1px solid #000'>L3330X</div>
+        <div style = 'width:10%;border:1px solid #000'>QQ10</div>
+        <div style = 'width:10%;border:1px solid #000'>{{item.description}}</div>
+        <div style = 'width:10%;border:1px solid #000'>Jumbo</div>
+        <div style = 'width:10%; border:1px solid #000'>Polish</div>
+        <div style = 'width:5%;border:1px solid #000'>{{item.qty}}</div>
+        <div style = 'width:10%;border:1px solid #000'>410</div>
+        <div style = 'width:10%;border:1px solid #000'>988</div>
+        <div style = 'width:10%;border:1px solid #000'>88</div>
+        
+    </div>
+    
+    {% if item.idx == 10 %}
+        {{footer ()}}
+        {{header ()}}
+        {{tablehead ()}}
+    
+    {% elif  item.idx == 25 %}
+        {{footer ()}}
+        {{header ()}}
+        {{tablehead ()}}
+    
+    {% endif %}
+    	
+        {%- endfor -%}
+        
+    
+    <div class = "col-xs-12" style = "Display:flex; padding:0;border:1px solid #000">
+        <div style = 'width:50%; margin-left:200'><b>Total Slabs.Cts:</b></div>
+        <div style = 'width:12.5%;margin-left:25;'><b>{{sales_order.total_qty}}</b></div>
+        <div style = 'width:12.5%;'><b>7868</b></div>
+        <div style = 'width:12.5%;'><b>{{doc.net_weight_pkg}}</b></div>
+        <div style = 'width:12.5%;margin-left:10;'><b>{{doc.gross_weight_pkg}}</b></div>
+        
+    </div>
+    
+    <section class="table-total flex">
+        <div class = "total-weights">
+            <p>Total Net Weight : {{doc.net_weight_pkg}} {{sales_order.items[0]["uom"]}}</p>
+            <P>Total Gross Weight : {{doc.gross_weight_pkg}} {{sales_order.items[0]["uom"]}}</P>
+            <p>No of Packages : {{doc.to_case_no}}</p>
+        </div>
+   
+    </section>
+
+    <section class="flex">
+        <div class="border-right-black">
+            
+        </div>
+        <div class = "authorized-section">
+            <p>{{company.name}}</p>
+            <br>
+            <br>
+            <p>Authorised Signatory & Stamp</p>
+        </div>
+    </section>
+    </div>
+
+CSS SECTIOn
+section
+{
+    border: 1px solid #000;
+}
+div
+{
+    width: 100%;
+}
+.text-center
+{
+    text-align: center;
+}
+.first-left-div
+{
+    border-right: 1px solid #000;
+    margin-left:10;
+}
+.flex
+{
+    display: flex;
+}
+.justify-space-between
+{
+    justify-content: space-between;
+}
+.bd-solid
+{
+    border: 1px solid #000;
+}
+.head .left img 
+{
+    width: 120px;
+}
+.head .right 
+{
+    width: 100%;
+}
+.border-btm-black
+{
+    border-bottom: 1px solid #000;
+    margin-left:10;
+}
+.border-right-black
+{
+    border-right: 1px solid #000;
+}
+.justify-end
+{
+    justify-content: end;
+}
+.justify-end p
+{
+    padding: 10px;
+}
+table, tr, td {
+  border: 1px solid;
+}
+.authorized-section{
+    margin-left: 50;
+}
+.total-weights{
+    margin-left :10;
+}
+.references{
+    margin-left:10;
+}
+.buyer{
+    
+    margin-left:10;
+}
+.effective-dimension{
+    margin-left:10;
+}
+.print-format img
+{
+    height: 120px;
+}
+.heading-right
+{
+    font-size: 22px;
+}
+.page-break {
+  page-break-after: always;
+}
