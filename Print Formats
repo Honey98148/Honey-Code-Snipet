@@ -547,3 +547,98 @@ table, tr, td {
             {{ _("Page {0} of {1}").format('<span class="page"></span>', '<span class="topage"></span>') }}
         </p>
     </div>
+
+
+/////////////////////////////////////////////////////////////////////////////
+<style>
+table, th, td {
+  border: 1px solid black;
+}
+
+</style>
+
+
+
+
+{% macro header() %}
+<div class = "cal-xs-12">
+<img src="/assets/flexitude_app/images/flexitude_logo.png">
+</div>
+{% endmacro %}
+
+
+{% macro tableheader() %}
+<table style="">
+    <tr style="background-color:grey;color:white"> 
+        <td>S No</td>
+        <td>Item Code</td>
+        <td>Item Name</td>
+        <td>Description</td>
+        <td>Qty</td>
+        <td>Rate</td>
+        <td>Item Group</td>
+    </tr>
+{% endmacro %}
+
+
+
+{% macro tablefooter() %}
+</table>
+<div style="page-break:always;"></div>
+{% endmacro %}
+
+{{ header()}}
+
+<div class = "row" >
+    <div class = "col-xs-12">
+        <div class = "col-xs-6">
+            <p>Customer : {{doc.customer_name}}</p>
+            <p>Patient : {{doc.patient_name}}</p>
+            
+        </div>
+        <div class = "col-xs-6" style = "text-align:center">
+            <p>Transaction Date : {{doc.posting_date}}</p>
+            <p>Due Date : {{doc.due_date}}</p>
+        </div>
+    </div>
+</div>
+
+{{ tableheader()}}
+
+{% for item in doc.items %}
+<tr>
+    <td>{{item.idx}}</td>
+    <td>{{item.item_code}}</td>
+    <td>{{item.item_name}}</td>
+    <td>{{item.description}}</td>
+    <td>{{item.qty}}</td>
+    <td>{{item.rate}}</td>
+    <td>{{item.item_group}}</td>
+</tr>
+
+{% if item.idx == 16 %}
+   {{tablefooter()}}
+   
+   {{header ()}}
+   {{tableheader()}}
+   
+{% endif %}
+
+{% endfor %}
+</table>
+
+<div class = "row" >
+    <div class = "col-xs-12">
+        <div class = "col-xs-6">
+            <p>Net Total : {{doc.base_net_total}}</p>
+            <p>Total Amount : {{doc.base_net_total}}</p>
+            <p>Rounded Total : {{doc.base_rounded_total}}</p>
+            
+        </div>
+        
+        <div class = "col-xs-6" style = "text-align:center">
+            <p>Net Total In Words: {{doc.base_in_words}}</p>
+        </div>
+    </div>
+</div>
+
